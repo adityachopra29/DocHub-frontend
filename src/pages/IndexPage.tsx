@@ -1,8 +1,6 @@
 import React from "react"
-import TextEditor from "../components/textEditor"
-import { Outlet } from "react-router-dom"
 
-export default function DocPage(){
+export default function IndexPage(){
     return(
         <>
     <nav className=" top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
@@ -134,7 +132,7 @@ export default function DocPage(){
         </aside>
 
         <div className=" w-full">
-            <TextEditor />
+            This is index pages
         </div>
     </div>
 
