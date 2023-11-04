@@ -1,13 +1,30 @@
 import React from 'react'
-import { Routes , Route } from 'react-router-dom';
 import DocPage from './pages/DocPage';
-// import LoginPage from './pages/LoginPage';
-
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import TextEditor from './components/textEditor';
+import Index from './components';
 
 function App() {
+
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <DocPage />,
+      children:[
+        {
+          index:true,
+          element: <Index />,
+        },
+        {
+          path: "/documents/:documentId",
+          element: <TextEditor />
+        }
+      ]
+    }
+  ])
     return(
       <>
-        <DocPage/>
+        <RouterProvider router={router} />
       </>
     )
   }
