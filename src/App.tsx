@@ -1,12 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import DocPage from './pages/DocPage';
 import { Routes, Route } from 'react-router-dom';
-import TextEditor from './components/textEditor';
 import LoginPage from './pages/LoginPage';
 import IndexPage from './pages/IndexPage';
 
 function App() {
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   return(
     <>
       <Routes>
