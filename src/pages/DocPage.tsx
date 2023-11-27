@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import TextEditor from "../components/textEditor"
 import Navbar from "../components/navbar"
 import Sidebar from "../components/sidebar"
+import CreateDocModal from "../components/createDocModal"
 import checkIsLoggedIn from "../checkLogin"
 import BackendClient from "../backendClient"
 import { useParams } from "react-router-dom"
@@ -11,7 +12,7 @@ export default function DocPage(){
 
     useEffect(() => {
         const fetchData = async () => {
-        console.log("Inside useEffect: ");
+        // console.log("Inside useEffect: ");
         let result = await checkIsLoggedIn();
     
         setLoggedIn(result)
@@ -40,9 +41,10 @@ export default function DocPage(){
         <>
             <Navbar/>
             <div className="flex gap-0 w-full h-full">
-                <Sidebar/>
+                <Sidebar/> 
                 <div className="w-full">
                     <TextEditor />
+                    {/* <CreateDocModal/> */}
                 </div>
             </div>
         </>

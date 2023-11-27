@@ -6,16 +6,22 @@ import { useParams } from 'react-router-dom';
 import BackendClient from '../backendClient';
 
 
-export default function TextEditor(){
+export default function TextEditor() {
   const [content, setContent] = useState('');
-  const {documentId} = useParams()
+  const { documentId } = useParams()
 
-  // useEffect(() => {
-  //   BackendClient.get(`document/${documentId}`)
-  //   .then(res => {
-  //     setContent(res.data.text)
-  //   })
-  // })
+  useEffect(() => {
+    BackendClient.get(`document/${documentId}/`)
+      .then(res => {
+        // console.log("success")
+        // console.log(res.data)
+        setContent(res.data.text)
+      })
+      .catch((e) => {
+        console.log("error")
+        console.log(e)
+      })
+  })
 
   const handleEditorChange = (value) => {
     setContent(value);
@@ -23,24 +29,24 @@ export default function TextEditor(){
 
   return (
     <>
-    <div className='h-full bg-slate-100 w-full'>
-    <div className="flex flex-col bg-slate-100">
-      <ReactQuill
-        theme="bubble"
-        value={content}
-        onChange={handleEditorChange}
-        modules={{
-          toolbar: [
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ header: 1 }, { header: 2 }],
-            [{ list: 'ordered' }, { list: 'bullet' }],
-            ['link', 'image'],
-            ['clean'],
-          ],
-        }}
-      />
-     </div>
-    </div>
+      <div className='h-full bg-slate-100 w-full'>
+        <div className="flex flex-col bg-slate-100">
+          <ReactQuill
+            theme="bubble"
+            value={content}
+            onChange={handleEditorChange}
+            modules={{
+              toolbar: [
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ header: 1 }, { header: 2 }],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                ['link', 'image'],
+                ['clean'],
+              ],
+            }}
+          />
+        </div>
+      </div>
     </>
   );
 };

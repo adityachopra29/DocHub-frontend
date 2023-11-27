@@ -1,40 +1,38 @@
 import React, { useEffect, useState } from "react"
 import BackendClient from "../backendClient";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from 'react-redux';
+import { useDisclosure } from "@nextui-org/react";
+import CreateDocModal from "./createDocModal";
 
 
 export default function Sidebar() {
     const [docList, setDocList] = useState<string[]>([])
+    // const dispatch = useDispatch();
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     useEffect(() => {
         BackendClient.get("document/")
-        .then(res => {
-            console.log("the response from document list request:")
-            const temp_doc_list: string[] = [];
+            .then(res => {
+                // console.log("the response from document list request:")
+                const temp_doc_list: string[] = [];
                 // console.log(res.data)
                 res.data.forEach(element => {
                     // console.log(element.name)
                     temp_doc_list.push(element.name)
-                    console.log(temp_doc_list)
+                    // console.log(temp_doc_list)
                 });
-                    setDocList(temp_doc_list)
+                setDocList(temp_doc_list)
             })
     }, [])
 
-    const navigate = useNavigate()
-
-    // function createDoc(){
-    //     BackendClient.post("document/")
-    //     .then(res => {
-    //         // navigate(`/document/${res.data.id}`)
-    //         console.log(res.data)
-    //     })
-    // }
+   
 
     return (
         <>
             <aside id="logo-sidebar" className=" ml-auto z-40 h-screen pt-8 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
                 <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+                    <CreateDocModal isOpen={isOpen} onOpenChange={onOpenChange} />
                     <ul className="space-y-2 font-medium">
 
                         <li>
@@ -57,14 +55,14 @@ export default function Sidebar() {
                         </li>
 
                         <li>
-                            <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                            <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                                 <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                                     <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z" />
                                 </svg>
 
-                                {/* <button className="flex-1 ml-3 whitespace-nowrap" onClick={createDoc}>Create document</button> */}
-                                
-                            </a>
+                                <button className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" onClick={onOpen} >Create Document</button>
+
+                            </div>
                         </li>
 
                         <li>
@@ -80,11 +78,10 @@ export default function Sidebar() {
                             <ul id="dropdown-example" className=" py-2 space-y-2">
                                 {
                                     docList.map((element) => {
-                                        // console.log(element)
                                         return (
-                                <li>
-                                    <a href="#" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">{element}</a>
-                                </li>
+                                            <li>
+                                                <a href="#" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">{element}</a>
+                                            </li>
                                         )
                                     })
                                 }
