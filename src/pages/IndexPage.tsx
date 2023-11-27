@@ -2,7 +2,7 @@ import React, { useEffect } from "react"
 import Navbar from "../components/navbar"
 import Sidebar from "../components/sidebar"
 
-export default function DocPage(){
+export default function IndexPage(){
     return(
         <>
         <Navbar/>

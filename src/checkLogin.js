@@ -1,15 +1,13 @@
 import BackendClient from "./backendClient";
 
-export default function IsLoggedIn(){
-    let userLoggedin = false
-    BackendClient.get("http://localhost/8000/check_login/")
+// We have to return a promise from here and resolve it there
+export default function checkIsLoggedIn() {
+  console.log("inside IsLoggedIn");
+//   this what we are returning is a promise
+    return BackendClient.get("check_login/")
     .then(res => {
-        const parsedObject = JSON.parse(res);
-        console.log(parsedObject);
-        if(parsedObject.isLoggedIn){
-            console.log("user is logged in")
-            userLoggedin =  true;
-        }
+        console.log(res.data)
+        let { isLoggedIn, userData } = res.data
+        return isLoggedIn
     })
-    return userLoggedin;
-}
+    }

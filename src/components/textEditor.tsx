@@ -1,11 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import 'react-quill/dist/quill.bubble.css';
+import { useParams } from 'react-router-dom';
+import BackendClient from '../backendClient';
 
 
 export default function TextEditor(){
   const [content, setContent] = useState('');
+  const {documentId} = useParams()
+
+  // useEffect(() => {
+  //   BackendClient.get(`document/${documentId}`)
+  //   .then(res => {
+  //     setContent(res.data.text)
+  //   })
+  // })
 
   const handleEditorChange = (value) => {
     setContent(value);
