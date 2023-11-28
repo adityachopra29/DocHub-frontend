@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react"
 import TextEditor from "../components/textEditor"
 import Navbar from "../components/navbar"
 import Sidebar from "../components/sidebar"
-import CreateDocModal from "../components/createDocModal"
 import checkIsLoggedIn from "../checkLogin"
-import BackendClient from "../backendClient"
 import { useParams } from "react-router-dom"
 
 export default function DocPage(){
@@ -44,7 +42,7 @@ export default function DocPage(){
                 <Sidebar/> 
                 <div className="w-full">
                     <TextEditor />
-                    {/* <CreateDocModal/> */}
+                    
                 </div>
             </div>
         </>

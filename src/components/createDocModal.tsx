@@ -1,9 +1,12 @@
 import React from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@nextui-org/react";
 import BackendClient from "../backendClient";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateDocModal(props:
   { isOpen: any, onOpenChange: any }) {
+
+    const navigate = useNavigate()
 
     function getSessionCookie(cookieName) {
       const cookies = document.cookie.split(';');
@@ -28,8 +31,8 @@ function onSubmit(data){
   BackendClient.post("document/", data,
   { headers : headers})
       .then(res => {
-          // navigate(`/document/${res.data.id}`)
-          console.log(res.data)
+          navigate(`/document/${res.data.id}`)
+
       })
 }
     
@@ -62,7 +65,8 @@ function onSubmit(data){
                     "delta": {},
                     "text": ""
                 }
-                  onSubmit(data)}}>
+                  onSubmit(data)
+                  onClose()}}>
                   Action
                 </Button>
               </ModalFooter>
