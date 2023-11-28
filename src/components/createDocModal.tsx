@@ -1,17 +1,32 @@
 import React from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@nextui-org/react";
 import BackendClient from "../backendClient";
-import { data } from "autoprefixer";
 
 export default function CreateDocModal(props:
   { isOpen: any, onOpenChange: any }) {
 
+    function getSessionCookie(cookieName) {
+      const cookies = document.cookie.split(';');
+      for (const cookie of cookies) {
+        const [name, value] = cookie.trim().split('=');
+        if (name === cookieName) {
+          return value;
+        }
+      }
+      return null; // Return null if the cookie is not found
+    }
+    
+    const sessionCookie = getSessionCookie('sessionid');
+    
   
 function onSubmit(data){
   const headers = {
-    
+    'Cookie': `sessionid=${sessionCookie}`,
+    'Content-Type': 'application/json'
   }
-  BackendClient.post("document/", data)
+  
+  BackendClient.post("document/", data,
+  { headers : headers})
       .then(res => {
           // navigate(`/document/${res.data.id}`)
           console.log(res.data)
@@ -44,7 +59,7 @@ function onSubmit(data){
                   const elem = document.getElementById("docName") as HTMLInputElement
                   const data = {
                     "name": elem.value,
-                    "delta": null,
+                    "delta": {},
                     "text": ""
                 }
                   onSubmit(data)}}>
