@@ -1,9 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit'
-import createDocModalReducer from '../features/createDocModalSlice'
+// import createDocModalReducer from '../features/createDocModalSlice'
+import openDocumentReducer from '../features/openDocumentSlice'
 
 const store = configureStore({
     reducer: {
-        createDocModal: createDocModalReducer,
+        openDocument: openDocumentReducer,
       // Add other reducers here if needed
     },
   });

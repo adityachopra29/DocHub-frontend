@@ -12,7 +12,7 @@ function App() {
     <>
       <Route path='/' element={<LoginPage />} />
       <Route path = "/home" element={<IndexPage />} />
-      <Route path = "/document/:documentId" element={<DocPage />}/>
+      <Route path = "/document/" element={<DocPage />}/>
     </>
   ))
 

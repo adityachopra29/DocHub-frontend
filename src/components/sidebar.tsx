@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { useDisclosure } from "@nextui-org/react";
 import CreateDocModal from "./createDocModal";
-
+import { changeDocument } from "../features/openDocumentSlice";
 
 export default function Sidebar() {
-    const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     interface State {
         stateMap: Map<string, number>;
@@ -21,7 +21,7 @@ export default function Sidebar() {
     useEffect(() => {
         BackendClient.get("document/")
             .then(res => {
-                console.log("the response from document list request:")
+                // console.log("the response from document list request:")
                 res.data.forEach(element => {
                     setState({
                         stateMap: new Map(state.stateMap.set(element.name, element.id)),
@@ -84,7 +84,7 @@ export default function Sidebar() {
                                     Array.from(state.stateMap.entries()).map((element) => {
                                         return (
                                             <li key={element[1]}>
-                                                <button onClick={() => {navigate(`/document/${element[1]}`)}}className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">{element[0]}</button>
+                                                <button onClick={() => dispatch(changeDocument(element[1]))} className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">{element[0]}</button>
                                             </li>
                                         )
                                     })                                    
