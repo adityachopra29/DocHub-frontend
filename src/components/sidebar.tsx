@@ -8,6 +8,15 @@ import { changeDocument } from "../features/openDocumentSlice";
 
 export default function Sidebar() {
     const dispatch = useDispatch()
+    const openDocument = useSelector((state:any) => state.openDocument)
+
+    function deleteDoc(documentId, nextElement ,dispatch){
+        BackendClient.delete(`document/${documentId}/`)
+        .then(res => console.log(res.data))
+        console.log("nextElementId :" + nextElement[1])
+        dispatch(changeDocument(nextElement[1]))
+        
+    }
 
     interface State {
         stateMap: Map<string, number>;
@@ -15,7 +24,6 @@ export default function Sidebar() {
       const [state, setState] = useState<State>({
         stateMap: new Map<string, number>(),
       });
-    // const dispatch = useDispatch();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     useEffect(() => {
@@ -27,10 +35,9 @@ export default function Sidebar() {
                         stateMap: new Map(state.stateMap.set(element.name, element.id)),
                       });
                 });
-                
             })
-    }, [])
-
+    }, [openDocument])
+    
     return (
         <>
             <aside id="logo-sidebar" className=" ml-auto z-40 h-screen pt-8 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
@@ -49,13 +56,13 @@ export default function Sidebar() {
                         </li>
 
                         <li>
-                            <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-    // const [docList, setDocList] = useState< Map<string, number> >
-700 group">
-                                <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                            <a className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                                     <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z" />
                                 </svg>
-                                <span className="flex-1 ml-3 whitespace-nowrap">Users</span>
-                            </a>
+                                <span className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">Users</span>
+
+                            </a> 
                         </li>
 
                         <li>
@@ -79,12 +86,19 @@ export default function Sidebar() {
                                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
                                 </svg>
                             </button>
-                            <ul id="dropdown-example" className=" py-2 space-y-2">
+                            <ul className=" py-2 space-y-2">
                                 {
-                                    Array.from(state.stateMap.entries()).map((element) => {
+                                    Array.from(state.stateMap.entries()).map((element, index, array) => {
+                                        const nextElement =(index < array.length-1 ? array[index + 1] : null)
                                         return (
-                                            <li key={element[1]}>
-                                                <button onClick={() => dispatch(changeDocument(element[1]))} className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">{element[0]}</button>
+                                            <li className="flex justify-between" key={element[1]}>
+                                                <button onClick={() => dispatch(changeDocument(element[1]))} className={`flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 
+                                                "focus:bg-gray-100 dark:focus:bg-gray-700"} `}>
+                                                    {element[0]} {element[1] }
+                                                </button>
+                                                <button className="dark:text-white dark:hover:bg-gray-700 transition duration-75 rounded-lg w-10 flex justify-center items-center" onClick={() => deleteDoc(element[1], nextElement ,dispatch)}>
+                                                    <img src="delete.png" className="hover:bg-gray-100 w-6" />
+                                                </button>
                                             </li>
                                         )
                                     })                                    
@@ -105,12 +119,6 @@ export default function Sidebar() {
                             <ul id="dropdown-example" className=" py-2 space-y-2">
                                 <li>
                                     <a href="#" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Doc1</a>
-                                </li>
-
-                                <li>
-                                    <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                                        <span className="ml-3">Logout</span>
-                                    </a>
                                 </li>
 
                             </ul>

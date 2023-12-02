@@ -1,5 +1,8 @@
 import React from "react";
 import {Button} from "@nextui-org/react";
+import { useDispatch, useSelector } from "react-redux"
+import { useEffect } from "react";
+import CheckLogin from "../checkLogin";
 
 export default function LoginPage(){
 

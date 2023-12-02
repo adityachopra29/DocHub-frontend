@@ -5,7 +5,7 @@ interface openDocumentState {
 }
 
 const initialState: openDocumentState = {
-  documentId : 0
+  documentId : -1
 };
 
 export const openDocumentSlice = createSlice({
@@ -13,7 +13,8 @@ export const openDocumentSlice = createSlice({
   initialState,
   reducers: {
     changeDocument : (state, action) => { //these are the switch cases for different actions that can be passed into the reducer
-        state.documentId = action.payload
+      state.documentId = action.payload
+      console.log("new doc Id: ", state.documentId)
     }
   },
 });
@@ -21,4 +22,3 @@ export const openDocumentSlice = createSlice({
 export const { changeDocument } = openDocumentSlice.actions;
 
 export default openDocumentSlice.reducer;
-

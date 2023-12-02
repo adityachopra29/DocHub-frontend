@@ -1,40 +1,19 @@
 import React, { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import TextEditor from "../components/textEditor"
 import Navbar from "../components/navbar"
 import Sidebar from "../components/sidebar"
-import checkIsLoggedIn from "../checkLogin"
-import { useParams } from "react-router-dom"
+import CheckLogin from "../checkLogin"
 
 export default function DocPage(){
-    const [isLoggedIn, setLoggedIn] = useState<boolean | null>(null);
 
+    const currentUser = useSelector((state:any) => state.currentUser)
+    const dispatch = useDispatch();
     useEffect(() => {
-        const fetchData = async () => {
-        // console.log("Inside useEffect: ");
-        let result = await checkIsLoggedIn();
+      CheckLogin(dispatch);
+      console.log(currentUser)
+    }, [dispatch]);
     
-        setLoggedIn(result)
-        };
-        
-        fetchData();
-    }, []);
-    
-    if(isLoggedIn === null){
-        return(
-            <>
-                <div>Loading ...</div>
-            </>
-        )
-    }
-    if(!isLoggedIn){
-        return(
-            <>
-                <div>
-                    User is not logged in
-                </div>
-            </>
-        )
-    }
     return(
         <>
             <Navbar/>

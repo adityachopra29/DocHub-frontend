@@ -1,13 +1,13 @@
 import React from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@nextui-org/react";
 import BackendClient from "../backendClient";
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { changeDocument } from "../features/openDocumentSlice";
 
 export default function CreateDocModal(props:
   { isOpen: any, onOpenChange: any }) {
 
-    const dispatch = useDispatch
+    const dispatch = useDispatch()
 
     function getSessionCookie(cookieName) {
       const cookies = document.cookie.split(';');
@@ -25,14 +25,14 @@ export default function CreateDocModal(props:
   
 function onSubmit(data){
   const headers = {
-    'Cookie': `sessionid=${sessionCookie}`,
     'Content-Type': 'application/json'
   }
   
   BackendClient.post("document/", data,
   { headers : headers})
       .then(res => {
-        props.isOpen(false)
+        dispatch(changeDocument(res.data.id))
+        // props.isOpen(false)
       })
 }
     

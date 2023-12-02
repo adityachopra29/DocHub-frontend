@@ -1,11 +1,11 @@
-import { configureStore } from '@reduxjs/toolkit'
-// import createDocModalReducer from '../features/createDocModalSlice'
+import { configureStore, current } from '@reduxjs/toolkit'
 import openDocumentReducer from '../features/openDocumentSlice'
+import userReducer from '../features/userSlice'
 
 const store = configureStore({
     reducer: {
         openDocument: openDocumentReducer,
-      // Add other reducers here if needed
+        currentUser:  userReducer
     },
   });
   

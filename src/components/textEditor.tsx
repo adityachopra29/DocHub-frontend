@@ -10,32 +10,36 @@ import { DeltaOperation, DeltaStatic } from 'quill';
 
 export default function TextEditor() {
   const [editorHtml, setEditorHtml] = useState('');
-  const [changes, setChanges] = useState([])
   const [stateDelta, setStateDelta] = useState<DeltaOperation[] | undefined>([])
 
   const currentDocumentID = useSelector((state: any) => state.openDocument.documentId)
 
   function handleEditorChange(value: string, delta: DeltaStatic, source, editor: ReactQuill.UnprivilegedEditor) {
-    // console.log(editor.getContents())
     const temp = editor.getContents().ops
-    setStateDelta(temp)
+    if (temp && JSON.stringify(temp) !== JSON.stringify(stateDelta)) {
+      setStateDelta(temp);
+    console.log("yo" + temp)
     if (temp) {
       const converter = new QuillDeltaToHtmlConverter(temp, {});
       setEditorHtml(converter.convert());
     }
-  }
+  }}
 
+  // to set the html of the text editor according to the delta
   useEffect(() => {
+    console.log("called")
     console.log("current docID: " + currentDocumentID)
-    if (currentDocumentID) {
+    if (currentDocumentID != -1) {
+      console.log(currentDocumentID)
       BackendClient.get(`document/${currentDocumentID}/`)
         .then(res => {
           // Check if delta is present before parsing
           if (res.data.delta) {
-            const obj = JSON.parse(res.data.delta);
+            // console.log(typeof(res.data.delta))
+            // const obj = JSON.parse(res.data.delta);
             console.log((res.data.delta))
             setStateDelta(res.data.delta)
-            var converter = new QuillDeltaToHtmlConverter(obj, {});
+            var converter = new QuillDeltaToHtmlConverter(res.data.delta, {});
             setEditorHtml(converter.convert());
           }
         })
@@ -46,21 +50,23 @@ export default function TextEditor() {
     }
   }, [currentDocumentID]);
 
-  //autosave function
+  // autosave function
   useEffect(() => {
-    if (stateDelta) {
-      const data = {
-        'delta': stateDelta
+    console.log("autosave")
+    if(currentDocumentID != -1){
+      if (stateDelta) {
+        const data = {
+          'delta': stateDelta
+        }
+        const headers = {
+          'Content-Type': 'application/json'
+        }
+  
+        BackendClient.patch(`document/${currentDocumentID}/`, data, { headers: headers })
+          .then(res => console.log(res.data))
+  
       }
-      const headers = {
-        'Content-Type': 'application/json'
-      }
-
-      BackendClient.patch(`document/${currentDocumentID}/`, data, { headers: headers })
-        .then(res => console.log(res.data))
-
     }
-
 
   }, [stateDelta])
 
