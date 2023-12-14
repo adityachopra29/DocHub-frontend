@@ -7,7 +7,7 @@ import { changeDocument } from "../features/openDocumentSlice";
 
 export default function Sidebar() {
     const dispatch = useDispatch()
-    const openDocument = useSelector((state:any) => state.openDocument.documentId)
+    const currentDocumentID = useSelector((state:any) => state.openDocument.documentId)
 
     function deleteDoc(documentId, nextElement ,dispatch){
         BackendClient.delete(`document/${documentId}/`)
@@ -30,7 +30,7 @@ export default function Sidebar() {
       });
 
     useEffect(() => {
-        console.log("current docID: " + openDocument)
+        console.log("current docID: " + currentDocumentID)
         BackendClient.get("user_access_permissions/")
             .then(res => {
                 // console.log("the response from document list request:")
@@ -48,7 +48,7 @@ export default function Sidebar() {
                     }
                 });
             })
-    }, [openDocument])
+    }, [currentDocumentID])
     
     return (
         <>
@@ -102,10 +102,10 @@ export default function Sidebar() {
                                 {
                                     Array.from(personalDocState.stateMap.entries()).map((element, index, array) => {
                                         const nextElement =(index < array.length-1 ? array[index + 1] : null)
-                                        // console.log(element[1])
-                                        // console.log("current doc: "+openDocument.documentId)
+                                        console.log(element[1])
+                                        console.log("current doc: "+currentDocumentID)
                                         return (
-                                            <li className={`flex justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${(element[1]== openDocument.documentId) ? 'bg-gray-100 dark:bg-gray-700' : ''}`} key={element[1]}>
+                                            <li className={`flex justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${(element[1]== currentDocumentID) ? 'bg-gray-100 dark:bg-gray-700' : ''}`} key={element[1]}>
                                                 <button onClick={() => dispatch(changeDocument(element[1]))} className={`flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group  dark:text-white  
                                                 "focus:bg-gray-100 dark:focus:bg-gray-700"} `}>
                                                     {element[0]} {element[1]}
@@ -135,9 +135,9 @@ export default function Sidebar() {
                                     Array.from(sharedDocState.stateMap.entries()).map((element, index, array) => {
                                         const nextElement =(index < array.length-1 ? array[index + 1] : null)
                                         // console.log(element[1])
-                                        // console.log("current doc: "+openDocument.documentId)
+                                        // console.log("current doc: "+currentDocumentID)
                                         return (
-                                            <li className={`flex justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${(element[1]== openDocument.documentId) ? 'bg-gray-100 dark:bg-gray-700' : ''}`} key={element[1]}>
+                                            <li className={`flex justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${(element[1]== currentDocumentID) ? 'bg-gray-100 dark:bg-gray-700' : ''}`} key={element[1]}>
                                                 <button onClick={() => dispatch(changeDocument(element[1]))} className={`flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group  dark:text-white  
                                                 "focus:bg-gray-100 dark:focus:bg-gray-700"} `}>
                                                     {element[0]} {element[1]}

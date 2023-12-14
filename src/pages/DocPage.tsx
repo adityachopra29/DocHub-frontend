@@ -13,7 +13,7 @@ export default function DocPage(){
     const dispatch = useDispatch();
     useEffect(() => {
       CheckLogin(dispatch);
-      console.log(currentUser)
+    //   console.log(currentUser)
     }, [dispatch]);
     
     return(
