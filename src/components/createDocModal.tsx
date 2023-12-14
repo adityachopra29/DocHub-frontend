@@ -9,7 +9,6 @@ export default function CreateDocModal(props:
 
     const dispatch = useDispatch()
 
-  
   function onSubmit(data){
     const headers = {
       'Content-Type': 'application/json'
@@ -20,14 +19,13 @@ export default function CreateDocModal(props:
     { headers : headers})
         .then(res => {
           dispatch(changeDocument(res.data.id))
-          // props.isOpen(false)
         })
   }
     
 
   return (
     <>
-      <Modal isOpen={props.isOpen} onOpenChange={props.onOpenChange} size="3xl">
+      <Modal isOpen={props.isOpen} onOpenChange={props.onOpenChange} size="xl">
         <ModalContent>
           {(onClose) => (
             <>

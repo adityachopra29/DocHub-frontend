@@ -7,7 +7,7 @@ import { changeDocument } from "../features/openDocumentSlice";
 
 export default function Sidebar() {
     const dispatch = useDispatch()
-    const openDocument = useSelector((state:any) => state.openDocument)
+    const openDocument = useSelector((state:any) => state.openDocument.documentId)
 
     function deleteDoc(documentId, nextElement ,dispatch){
         BackendClient.delete(`document/${documentId}/`)
@@ -17,22 +17,35 @@ export default function Sidebar() {
         
     }
 
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
     interface State {
         stateMap: Map<string, number>;
       }   
-      const [state, setState] = useState<State>({
+      const [personalDocState, setpersonalDocState] = useState<State>({
         stateMap: new Map<string, number>(),
       });
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+      const [sharedDocState, setsharedDocState] = useState<State>({
+        stateMap: new Map<string, number>(),
+      });
 
     useEffect(() => {
-        BackendClient.get("document/")
+        console.log("current docID: " + openDocument)
+        BackendClient.get("user_access_permissions/")
             .then(res => {
                 // console.log("the response from document list request:")
                 res.data.forEach(element => {
-                    setState({
-                        stateMap: new Map(state.stateMap.set(element.name, element.id)),
-                      });
+                    if(element[1]){
+                        //it is personal doc
+                        setpersonalDocState({
+                            stateMap: new Map(personalDocState.stateMap.set(element[0].name, element[0].id)),
+                          });
+                    }else if(!element[1]){
+                        //shared document
+                        setsharedDocState({
+                            stateMap: new Map(sharedDocState.stateMap.set(element[0].name, element[0].id)),
+                          });
+                    }
                 });
             })
     }, [openDocument])
@@ -87,7 +100,7 @@ export default function Sidebar() {
                             </button>
                             <ul className=" py-2 space-y-2">
                                 {
-                                    Array.from(state.stateMap.entries()).map((element, index, array) => {
+                                    Array.from(personalDocState.stateMap.entries()).map((element, index, array) => {
                                         const nextElement =(index < array.length-1 ? array[index + 1] : null)
                                         // console.log(element[1])
                                         // console.log("current doc: "+openDocument.documentId)
@@ -117,11 +130,25 @@ export default function Sidebar() {
                                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
                                 </svg>
                             </button>
-                            <ul id="dropdown-example" className=" py-2 space-y-2">
-                                <li>
-                                    <a href="#" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Doc1</a>
-                                </li>
-
+                            <ul className=" py-2 space-y-2">
+                                {
+                                    Array.from(sharedDocState.stateMap.entries()).map((element, index, array) => {
+                                        const nextElement =(index < array.length-1 ? array[index + 1] : null)
+                                        // console.log(element[1])
+                                        // console.log("current doc: "+openDocument.documentId)
+                                        return (
+                                            <li className={`flex justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${(element[1]== openDocument.documentId) ? 'bg-gray-100 dark:bg-gray-700' : ''}`} key={element[1]}>
+                                                <button onClick={() => dispatch(changeDocument(element[1]))} className={`flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group  dark:text-white  
+                                                "focus:bg-gray-100 dark:focus:bg-gray-700"} `}>
+                                                    {element[0]} {element[1]}
+                                                </button>
+                                                <button className="dark:text-white transition duration-75 rounded-lg w-10 flex justify-center items-center" onClick={() => deleteDoc(element[1], nextElement ,dispatch)}>
+                                                    <img src="delete.png" className=" w-6" />
+                                                </button>
+                                            </li>
+                                        )
+                                    })                                    
+                                }
                             </ul>
                         </li>
                     </ul>

@@ -28,14 +28,15 @@ export default function TextEditor() {
   // to set the html of the text editor according to the delta
   useEffect(() => {
     console.log("called")
-    console.log("current docID: " + currentDocumentID)
     if (currentDocumentID != -1) {
-      console.log(currentDocumentID)
       BackendClient.get(`document/${currentDocumentID}/`)
         .then(res => {
           // Check if delta is present before parsing
+          console.log("we here")
+          console.log(res.data.delta)
           if (res.data.delta) {
-            // console.log(typeof(res.data.delta))
+            console.log("yo boys")
+            console.log(res.data.delta)
             // const obj = JSON.parse(res.data.delta);
             console.log((res.data.delta))
             setStateDelta(res.data.delta)
@@ -61,13 +62,12 @@ export default function TextEditor() {
         const headers = {
           'Content-Type': 'application/json'
         }
-  
+        // this is not working
         BackendClient.patch(`document/${currentDocumentID}/`, data, { headers: headers })
           .then(res => console.log(res.data))
   
       }
     }
-
   }, [stateDelta])
 
   return (
