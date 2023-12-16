@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
 import BackendClient from "../backendClient";
-import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { useDisclosure } from "@nextui-org/react";
 import CreateDocModal from "./createDocModal";
@@ -8,7 +7,7 @@ import { changeDocument } from "../features/openDocumentSlice";
 
 export default function Sidebar() {
     const dispatch = useDispatch()
-    const openDocument = useSelector((state:any) => state.openDocument)
+    const currentDocumentID = useSelector((state:any) => state.openDocument.documentId)
 
     function deleteDoc(documentId, nextElement ,dispatch){
         BackendClient.delete(`document/${documentId}/`)
@@ -18,25 +17,38 @@ export default function Sidebar() {
         
     }
 
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
     interface State {
         stateMap: Map<string, number>;
       }   
-      const [state, setState] = useState<State>({
+      const [personalDocState, setpersonalDocState] = useState<State>({
         stateMap: new Map<string, number>(),
       });
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+      const [sharedDocState, setsharedDocState] = useState<State>({
+        stateMap: new Map<string, number>(),
+      });
 
     useEffect(() => {
-        BackendClient.get("document/")
+        console.log("current docID: " + currentDocumentID)
+        BackendClient.get("user_access_permissions/")
             .then(res => {
                 // console.log("the response from document list request:")
                 res.data.forEach(element => {
-                    setState({
-                        stateMap: new Map(state.stateMap.set(element.name, element.id)),
-                      });
+                    if(element[1]){
+                        //it is personal doc
+                        setpersonalDocState({
+                            stateMap: new Map(personalDocState.stateMap.set(element[0].name, element[0].id)),
+                          });
+                    }else if(!element[1]){
+                        //shared document
+                        setsharedDocState({
+                            stateMap: new Map(sharedDocState.stateMap.set(element[0].name, element[0].id)),
+                          });
+                    }
                 });
             })
-    }, [openDocument])
+    }, [currentDocumentID])
     
     return (
         <>
@@ -88,16 +100,18 @@ export default function Sidebar() {
                             </button>
                             <ul className=" py-2 space-y-2">
                                 {
-                                    Array.from(state.stateMap.entries()).map((element, index, array) => {
+                                    Array.from(personalDocState.stateMap.entries()).map((element, index, array) => {
                                         const nextElement =(index < array.length-1 ? array[index + 1] : null)
+                                        console.log(element[1])
+                                        console.log("current doc: "+currentDocumentID)
                                         return (
-                                            <li className="flex justify-between" key={element[1]}>
-                                                <button onClick={() => dispatch(changeDocument(element[1]))} className={`flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 
+                                            <li className={`flex justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${(element[1]== currentDocumentID) ? 'bg-gray-100 dark:bg-gray-700' : ''}`} key={element[1]}>
+                                                <button onClick={() => dispatch(changeDocument(element[1]))} className={`flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group  dark:text-white  
                                                 "focus:bg-gray-100 dark:focus:bg-gray-700"} `}>
-                                                    {element[0]} {element[1] }
+                                                    {element[0]}
                                                 </button>
-                                                <button className="dark:text-white dark:hover:bg-gray-700 transition duration-75 rounded-lg w-10 flex justify-center items-center" onClick={() => deleteDoc(element[1], nextElement ,dispatch)}>
-                                                    <img src="delete.png" className="hover:bg-gray-100 w-6" />
+                                                <button className="dark:text-white transition duration-75 rounded-lg w-10 flex justify-center items-center" onClick={() => deleteDoc(element[1], nextElement ,dispatch)}>
+                                                    <img src="delete.png" className=" w-6" />
                                                 </button>
                                             </li>
                                         )
@@ -107,20 +121,34 @@ export default function Sidebar() {
                         </li>
 
                         <li>
-                            <button type="button" className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
-                                <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 21">
+                            <button type="button" className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                                <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 18 21">
                                     <path d="M15 12a1 1 0 0 0 .962-.726l2-7A1 1 0 0 0 17 3H3.77L3.175.745A1 1 0 0 0 2.208 0H1a1 1 0 0 0 0 2h.438l.6 2.255v.019l2 7 .746 2.986A3 3 0 1 0 9 17a2.966 2.966 0 0 0-.184-1h2.368c-.118.32-.18.659-.184 1a3 3 0 1 0 3-3H6.78l-.5-2H15Z" />
                                 </svg>
                                 <span className="flex-1 ml-3 text-left whitespace-nowrap pr-3">Shared documents</span>
-                                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                <svg className="w-3 h-3" fill="none" viewBox="0 0 10 6">
                                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
                                 </svg>
                             </button>
-                            <ul id="dropdown-example" className=" py-2 space-y-2">
-                                <li>
-                                    <a href="#" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Doc1</a>
-                                </li>
-
+                            <ul className=" py-2 space-y-2">
+                                {
+                                    Array.from(sharedDocState.stateMap.entries()).map((element, index, array) => {
+                                        const nextElement =(index < array.length-1 ? array[index + 1] : null)
+                                        // console.log(element[1])
+                                        // console.log("current doc: "+currentDocumentID)
+                                        return (
+                                            <li className={`flex justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${(element[1]== currentDocumentID) ? 'bg-gray-100 dark:bg-gray-700' : ''}`} key={element[1]}>
+                                                <button onClick={() => dispatch(changeDocument(element[1]))} className={`flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group  dark:text-white  
+                                                "focus:bg-gray-100 dark:focus:bg-gray-700"} `}>
+                                                    {element[0]}
+                                                </button>
+                                                <button className="dark:text-white transition duration-75 rounded-lg w-10 flex justify-center items-center" onClick={() => deleteDoc(element[1], nextElement ,dispatch)}>
+                                                    <img src="delete.png" className=" w-6" />
+                                                </button>
+                                            </li>
+                                        )
+                                    })                                    
+                                }
                             </ul>
                         </li>
                     </ul>

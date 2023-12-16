@@ -9,37 +9,23 @@ export default function CreateDocModal(props:
 
     const dispatch = useDispatch()
 
-    function getSessionCookie(cookieName) {
-      const cookies = document.cookie.split(';');
-      for (const cookie of cookies) {
-        const [name, value] = cookie.trim().split('=');
-        if (name === cookieName) {
-          return value;
-        }
-      }
-      return null; // Return null if the cookie is not found
+  function onSubmit(data){
+    const headers = {
+      'Content-Type': 'application/json'
     }
     
-    const sessionCookie = getSessionCookie('sessionid');
-    
-  
-function onSubmit(data){
-  const headers = {
-    'Content-Type': 'application/json'
+    console.log(data)
+    BackendClient.post("document/", data,
+    { headers : headers})
+        .then(res => {
+          dispatch(changeDocument(res.data.id))
+        })
   }
-  
-  BackendClient.post("document/", data,
-  { headers : headers})
-      .then(res => {
-        dispatch(changeDocument(res.data.id))
-        // props.isOpen(false)
-      })
-}
     
 
   return (
     <>
-      <Modal isOpen={props.isOpen} onOpenChange={props.onOpenChange} size="3xl">
+      <Modal isOpen={props.isOpen} onOpenChange={props.onOpenChange} size="xl">
         <ModalContent>
           {(onClose) => (
             <>
@@ -49,9 +35,21 @@ function onSubmit(data){
                 <Input type="name" label="Document name" id="docName"/>
               </div>
                 
-              <p>Give viewing access to:</p>
+              <p>Give reading access to:</p>
               <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-                <Input type="name" label="Rights"/>
+                <Input type="name" label="Enter space seperated tags" id="readAccessTags"/>
+              </div>
+              <p>Give commenting access to:</p>
+              <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+                <Input type="name" label="Enter space seperated tags" id="commentAccessTags"/>
+              </div>
+              <p>Give edit access to:</p>
+              <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+                <Input type="name" label="Enter space seperated tags" id="writeAccessTags"/>
+              </div>
+              <p>Give complete access to:</p>
+              <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+                <Input type="name" label="Enter space seperated tags" id="deleteAccessTags"/>
               </div>
               </ModalBody>
               <ModalFooter>
@@ -59,15 +57,24 @@ function onSubmit(data){
                   Close
                 </Button>
                 <Button color="primary" onPress={() => {
-                  const elem = document.getElementById("docName") as HTMLInputElement
+                  const docName = document.getElementById("docName") as HTMLInputElement
+                  const readAccessTags = document.getElementById("readAccessTags") as HTMLInputElement
+                  const commentAccessTags = document.getElementById("commentAccessTags") as HTMLInputElement
+                  const writeAccessTags = document.getElementById("writeAccessTags") as HTMLInputElement
+                  const deleteAccessTags = document.getElementById("deleteAccessTags") as HTMLInputElement
+
                   const data = {
-                    "name": elem.value,
+                    "name": docName.value,
                     "delta": {},
-                    "text": ""
+                    "text": "",
+                    "read_permissions": readAccessTags.value.split(" "),
+                    "comment_permissions": commentAccessTags.value.split(" "),
+                    "write_permissions": writeAccessTags.value.split(" "),
+                    "delete_permissions": deleteAccessTags.value.split(" "),
                 }
                   onSubmit(data)
                   onClose()}}>
-                  Action
+                  Submit
                 </Button>
               </ModalFooter>
             </>
