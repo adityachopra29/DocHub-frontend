@@ -21,6 +21,7 @@ import { Button } from '@nextui-org/react';
 export default function TextEditor() {
   const [editorHtml, setEditorHtml] = useState('');
   const quillRef = useRef(null);
+  const [readOnly, setReadOnly] = React.useState<boolean>()
   // let autosave : number | null = null;
 
   Quill.register('modules/cursors', QuillCursors)
@@ -31,60 +32,82 @@ export default function TextEditor() {
   
   // for collaborative editing
   useEffect(() => {
-    if (currentDocumentID !== -1) {
-      console.log("we making ydoc instance")
-      const ydoc = new Y.Doc();
-      const provider = new WebsocketProvider('ws://localhost:1234',currentDocumentID ,ydoc);
-      const awareness = provider.awareness;
+    setReadOnly(true)
+      if (currentDocumentID !== -1) {
+        const ydoc = new Y.Doc();
+        const provider = new WebsocketProvider('ws://localhost:1234',currentDocumentID ,ydoc);
+        const awareness = provider.awareness;
+        const quillInstance = (quillRef.current as any).getEditor();
 
-      // Initialize Quill editor
-      const quillInstance = (quillRef.current as any).getEditor();
-
-      if (quillInstance) {
-        // Create shared Yjs text type
-        const ytext = ydoc.getText('quill');
-
-        // Bind Quill editor to Yjs text type
-        const binding = new QuillBinding(ytext, quillInstance, awareness);
-
-        // Set local user state
-        awareness.setLocalStateField('user', {
-          name: currentUserTag,
-        });
-
-        // Blur Quill editor on window blur
-        window.addEventListener('blur', () => {
-          quillInstance.blur();
-        });
-
-        return () => {
-          console.log("we disconnecting")
-          provider.disconnect();
-        };
-      }
-    }
+          BackendClient.get(`user_access_permissions/${currentDocumentID}/`)
+        .then(res => {
+          console.log("perm level: ", res.data)
+          if(res.data > 2){
+            setReadOnly(false)
+            console.log( readOnly)
+          }else{
+            setReadOnly(true)
+            console.log(readOnly)
+          }
+        
+        console.log("we making ydoc instance")
+        
+        // Initialize Quill editor
+  
+        console.log("readonly after quillinstance: "+readOnly)
+        if(readOnly == true){
+          quillInstance.disable()
+        }else{
+          quillInstance.enable()
+        }
+      })
+        if (quillInstance) {
+          // Create shared Yjs text type
+          const ytext = ydoc.getText('quill');
+  
+          // Bind Quill editor to Yjs text type
+          const binding = new QuillBinding(ytext, quillInstance, awareness);
+  
+          // Set local user state
+          awareness.setLocalStateField('user', {
+            name: currentUserTag,
+          });
+  
+          // Blur Quill editor on window blur
+          window.addEventListener('blur', () => {
+            quillInstance.blur();
+          });
+  
+        //   console.log("loading data from backend useeffect called")
+        // if (currentDocumentID != -1) {
+        //   BackendClient.get(`document/${currentDocumentID}/`)
+        //   .then(res => {
+        //     console.log("data loaded from backend: "+res.data.delta)
+        //     if (res.data.delta) {
+        //       console.log(res.data.delta)
+        //       var converter = new QuillDeltaToHtmlConverter(res.data.delta, {});
+        //       // console.log(converter.convert());
+        //       console.log("editorHtml: " + editorHtml)
+        //       // setEditorHtml("yooo nigga")
+        //     }
+        //     })
+        //     .catch((e) => {
+        //       console.log("error");
+        //       console.log(e);
+        //     });
+        //   }
+  
+          return () => {
+            console.log("we disconnecting")
+            provider.disconnect();
+          };
+        }
+      } 
   }, [currentDocumentID]);
   
   // to set the html of the text editor according to the delta from DB the first time
   useEffect(() => {
-    console.log("loading data from backend useeffect called")
-    if (currentDocumentID != -1) {
-      BackendClient.get(`document/${currentDocumentID}/`)
-      .then(res => {
-        // console.log("data loaded from backend: "+res.data.delta)
-        if (res.data.delta) {
-          console.log(res.data.delta)
-          var converter = new QuillDeltaToHtmlConverter(res.data.delta, {});
-          console.log(converter);
-          // console.log("editorHtml: " + editorHtml)
-          // setEditorHtml("yooo nigga")
-        }
-        })
-        .catch((e) => {
-          console.log("error");
-          console.log(e);
-        });
-      }
+    
     }, [currentDocumentID]);
     
     const savedoc = () => {
@@ -99,30 +122,6 @@ export default function TextEditor() {
     .then(res => console.log(res.data))
   }
   
-    // useEffect(() => {
-     
-    //   if(currentDocumentID != -1){
-    //      autosave = setInterval(() => {
-    //       console.log("autosaving: "+ autosave)
-    //       const quill = (quillRef.current as any).getEditor();
-    //       const delta = quill.getContents()
-    //       const data = {
-    //         'delta' : delta
-    //       }
-    //       BackendClient.patch(`document/${currentDocumentID}/`, data)
-    //       .then(res => console.log(res.data))
-    //     }, 5000)
-    //   }
-    // }, [currentDocumentID])
-  
-    // function autosave(content, delta, source, editor){
-    //   const data = {
-    //     delta
-    //   }
-    //   BackendClient.patch(`document/${currentDocumentID}`, 
-    //   data)
-    // }
-  
   
   return (
     <>
@@ -133,7 +132,6 @@ export default function TextEditor() {
               ref={quillRef}
               theme="snow"
               // value={editorHtml}
-              // onChange={autosave}
               modules={{
                 toolbar: [
                   ['bold', 'italic', 'underline', 'strike'],

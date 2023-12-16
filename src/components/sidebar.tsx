@@ -108,7 +108,7 @@ export default function Sidebar() {
                                             <li className={`flex justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${(element[1]== currentDocumentID) ? 'bg-gray-100 dark:bg-gray-700' : ''}`} key={element[1]}>
                                                 <button onClick={() => dispatch(changeDocument(element[1]))} className={`flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group  dark:text-white  
                                                 "focus:bg-gray-100 dark:focus:bg-gray-700"} `}>
-                                                    {element[0]} {element[1]}
+                                                    {element[0]}
                                                 </button>
                                                 <button className="dark:text-white transition duration-75 rounded-lg w-10 flex justify-center items-center" onClick={() => deleteDoc(element[1], nextElement ,dispatch)}>
                                                     <img src="delete.png" className=" w-6" />
@@ -140,7 +140,7 @@ export default function Sidebar() {
                                             <li className={`flex justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${(element[1]== currentDocumentID) ? 'bg-gray-100 dark:bg-gray-700' : ''}`} key={element[1]}>
                                                 <button onClick={() => dispatch(changeDocument(element[1]))} className={`flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group  dark:text-white  
                                                 "focus:bg-gray-100 dark:focus:bg-gray-700"} `}>
-                                                    {element[0]} {element[1]}
+                                                    {element[0]}
                                                 </button>
                                                 <button className="dark:text-white transition duration-75 rounded-lg w-10 flex justify-center items-center" onClick={() => deleteDoc(element[1], nextElement ,dispatch)}>
                                                     <img src="delete.png" className=" w-6" />
